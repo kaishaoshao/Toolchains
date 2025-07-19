@@ -20,11 +20,10 @@ set_target_properties(
 
 target_compile_features(libkdb PRIVATE cxx_std_17)
 
-target_include_directories(
-    libkdb
+target_include_directories(libkdb
     PUBLIC                        # 分离构建头文件和安装头文件
     $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
     PRIVATE
     ${CMAKE_SOURCE_DIR}/src/include
 )
@@ -42,7 +41,8 @@ install(TARGETS libkdb
 )
 
 # 安装公共头文件到指定目录
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/kdb
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
