@@ -13,6 +13,15 @@ namespace kdb {
         terminated // 进程已终止
     };
 
+    struct stop_reason
+    {
+        stop_reason(int wait_staus);
+
+        process_state reason;
+        std::uint8_t info; 
+    };
+
+
     class process {
         public: 
             ~process();
@@ -20,7 +29,7 @@ namespace kdb {
             static std::unique_ptr<process> attach(pid_t pid);
 
             void resume();
-            /* ? */ wait_on_signal();
+            stop_reason wait_on_signal();
 
             // 禁止默认构造函数 强制客户端使用静态成员，然后删除拷贝构造函数
             // 以禁用拷贝和移动行为
@@ -38,7 +47,7 @@ namespace kdb {
 
             process(pid_t pid, bool terminate_on_end) :
             pid_(pid), terminate_on_end_(terminate_on_end) {} 
-    }
+    };
 
 }
 

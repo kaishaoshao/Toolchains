@@ -1,5 +1,5 @@
 # 创建一个名为 libkdb 的库目标
-add_library(libkdb libkdb.cpp)
+add_library(libkdb process.cpp)
 # 为 libkdb 创建一个带命名空间的别名目标 sdb::libkdb
 # 作用：
 # 通过 sdb:: 命名空间避免命名冲突
