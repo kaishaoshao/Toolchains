@@ -1,5 +1,5 @@
 # 创建一个名为 libkdb 的库目标
-add_library(libkdb libkdb.cpp)
+add_library(libkdb process.cpp)
 # 为 libkdb 创建一个带命名空间的别名目标 sdb::libkdb
 # 作用：
 # 通过 sdb:: 命名空间避免命名冲突
@@ -20,11 +20,38 @@ set_target_properties(
 
 target_compile_features(libkdb PRIVATE cxx_std_17)
 
-target_include_directories(
-    libkdb
-    PRIVATE include
-    PUBLIC ${CMAKE_SOURCE_DIR}/include
+target_include_directories(libkdb
+    PUBLIC                        # 分离构建头文件和安装头文件
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/include
 )
 
+## 使用库和安装库信息
+# GNUInstallDirs 包含指定通用安装目录的变量，如 /include 和 /lib
+include(GNUInstallDirs) 
+# 创建一个导出目标kdb-targets, 其中包含有关项目不同组件的安装位置信息
+install(TARGETS libkdb
+    EXPORT kdb-targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+# 安装公共头文件到指定目录
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+# 使libkdb可被其他cmake项目导入，我们需要将libkdb的导出信息保存到文件中
+install(
+    EXPORT kdb-targets
+    FILE kdb-config.cmake
+    NAMESPACE kdb::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/kdb
+)
 
 
